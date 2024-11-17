@@ -26,7 +26,7 @@ class COTripUtil {
         }) 
     }
 
-    // Gets incident data from the official COTrip API - CODOT
+    // Gets Destination data from the official COTrip API - CODOT
     getDestinations(){
         return new Promise((resolve, reject)=>{
             const options = {method: 'GET'};
@@ -40,6 +40,25 @@ class COTripUtil {
                 .catch(err => console.error(err));
         }) 
     }
+
+    // Gets Road Condition data from the official COTrip API - CODOT 
+    getRoadConditions() {
+        return new Promise((resolve, reject) => {
+            const options = { method: 'GET' };
+            const url = `${this.baseUrl}/roadConditions?apiKey=${this.apiKey}`;
+            fetch(url, options)
+                .then(response => response.json())
+                .then(response => {
+                    this.roadConditions = response['features'];
+                    resolve(response['features']);
+                })
+                .catch(err => {
+                    console.error(err);
+                    reject(err);
+                });
+        });
+    }
+
 }
 
 module.exports = {COTripUtil};

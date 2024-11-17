@@ -10,9 +10,14 @@ async function main(){
 
 
     let destinations = await coTrip.getDestinations();
-    dataProcessor.importDestinations(destinations)
+    dataProcessor.importDestinations(destinations);
+
+    let roadSegments = await coTrip.getRoadConditions(); 
+    dataProcessor.importRoadConditions(roadSegments);  
+
     dataProcessor.buildMarkdown();
     dataProcessor.save();
+    dataProcessor.saveRoadSegmentsToMd();
 }
 
 module.exports = {main}

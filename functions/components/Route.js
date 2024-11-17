@@ -4,6 +4,7 @@ class Route{
         this.globalIncidents = []
         this.subroutes = {}
         this.alerts = {}
+        this.roadSegments  = []
     }
 
     addGlobalIncident(incident){
@@ -30,6 +31,10 @@ class Route{
 
     hasSubroute(name){
         return Object.keys(this.subroutes).includes(name);
+    }
+    
+    addRoadSegment(roadSegment) {
+        this.roadSegments.push(roadSegment);
     }
 }
 
