@@ -5,6 +5,7 @@ const { Route } = require('../components/Route');
 const { Subroute } = require('../components/Subroute');
 const { Destination } = require('../components/Destination');
 const { Incident } = require('../components/Incident');
+const { RoadSegment } = require('../components/RoadSegment');
 
 class DataProcessor {
     constructor(){
@@ -44,7 +45,7 @@ class DataProcessor {
             this.routes[route] = new Route(route);
             console.log("adding", route)
             for(let subroute of this.filters["routes"][route]){
-                console.log("adding", route, subroute)
+                //console.log("adding", route, subroute)
                 this.routes[route].addSubroute(new Subroute(subroute))
             }
         }
@@ -146,6 +147,22 @@ class DataProcessor {
         }
     }
 
+    importRoadConditions(roadConditions) {
+        for (let feature of roadConditions) { 
+            let roadSegment = new RoadSegment(feature);
+            
+            let routeName = roadSegment.route.routeName;
+    
+            if (this.filters.routes.hasOwnProperty(routeName)) {
+                if (!this.hasRoute(routeName)) {
+                    this.routes[routeName] = new Route(routeName); 
+                }
+                let routeObj = this.routes[routeName];
+    
+                routeObj.addRoadSegment(roadSegment);
+            } 
+        }
+    } 
 
     // build markdown by modifying contents of templates/reddit.md
     buildMarkdown(){
@@ -229,6 +246,29 @@ class DataProcessor {
             });
         }
     }
+
+    //save road segments data to md file 
+    saveRoadSegmentsToMd() {
+        try {
+            let markdownOutput = "";
+
+            const routeNames = Object.keys(this.routes);
+        
+            if (routeNames.length > 0) { 
+                const routeName = routeNames[0];
+                const route = this.routes[routeName];
+                markdownOutput += `## Route: ${routeName}\n\n`;
+                for (let segment of route.roadSegments) {
+                    markdownOutput += segment.toMarkdown();
+                }
+            } 
+
+            fs.writeFileSync('road_conditions.md', markdownOutput);
+            console.log('Road conditions markdown output saved');
+        } catch (err) {
+            console.error('Error saving markdown output:', err);
+        }
+    } 
 }
 
 module.exports = {DataProcessor}
