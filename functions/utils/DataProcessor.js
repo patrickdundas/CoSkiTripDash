@@ -101,6 +101,12 @@ class DataProcessor {
         let routeFilter = this.filters["routes"];
         // iterate through all current incidents and filter down to incidentRoutes
         for(let incident of incidents){
+            //Catche TypeError: Cannot read properties of null (or undefined) 
+            if (!incident.properties.routeName) {
+                console.warn("Skipping incident with undefined routeName:", incident);
+                continue;
+            } 
+
             // extract info from the incident
             let incidentRoute = incident['properties']['routeName'].toUpperCase();
 
@@ -115,10 +121,11 @@ class DataProcessor {
                     }
                 }
             }
-
+            
+            let baseIncidentRoute = incidentRoute.slice(0, -1);
             // check all routeFilter routes against the current incidentRoute
             for(let route in routeFilter){
-                if(incidentRoute.indexOf(route) !== -1){
+                if(baseIncidentRoute === route){
                     if(!this.hasRoute(route)){
                         this.routes[route] = new Route(route)
                     }
